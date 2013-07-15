@@ -120,7 +120,7 @@ class rootcut(graphbuilder.depbuilder):
             #hand cuts off to Matlab
             #try:
             print "Updating CAP"
-            self.update_cvs(self.root_cutdir_gen + '/cdmstools')
+            self.update_cvs(self.root_cutdir_gen + '/../cdmstools')
             print "Building FCCS tree"
             self.matlab_fork("makeCAPtree")
             print "Handing cuts off to MATLAB for production."

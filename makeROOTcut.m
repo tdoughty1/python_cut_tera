@@ -20,7 +20,7 @@ function status = makeROOTcut22(dataDir, cutDir, cut, version)
   
   
   % cdmstools path
-  pathCAP = '/data3/cdmsbatsProd/processing/cdmstools/';
+  pathCAP = '/tera2/data3/cdmsbatsProd/processing/cdmstools/';
     
   % initialize success flag
   status = 0;

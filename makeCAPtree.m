@@ -9,7 +9,7 @@ function success = makeCAPtree;
 
 % ========== CAP paths =========
    
-pathCAP = '/data3/cdmsbatsProd/processing/cdmstools';
+pathCAP = '/tera2/data3/cdmsbatsProd/processing/cdmstools';
 
 
 cd(pathCAP);
