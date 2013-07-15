@@ -47,11 +47,11 @@ class rootcut(graphbuilder.depbuilder):
         #location of the root cuts (containing directories named for
         #data taking mode--like ba or bg_restricted etc.)
         self.root_cutdir = (
-            '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3/merged/cuts')
+            '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
         #cut generation dir
-        self.root_cutdir_gen = '/data6/processing/cutgeneration/cuts'
+        self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing'
         #location of checked out matlab cuts
-        self.mat_cutdir = ('/localhome/production/python_cut'
+        self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing/src'
             '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
         #update cvs
         print "Updating cvs"
@@ -120,13 +120,13 @@ class rootcut(graphbuilder.depbuilder):
             #hand cuts off to Matlab
             #try:
             print "Updating CAP"
-            self.update_cvs(self.root_cutdir_gen + '/../cdmstools')
+            self.update_cvs(self.root_cutdir_gen + '/cdmstools')
             print "Handing cuts off to MATLAB for production."
 
             for types in self.run_type_list:
                 print "Updating {} cuts:".format(types)
-                arg1 = '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
-                arg2 = '/data6/processing/cutgeneration/cuts/{}'.format(types)
+                arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
+                arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
                 arg3 = kludge[types]
                 for c, v in arg3.iteritems():
 
@@ -145,7 +145,7 @@ class rootcut(graphbuilder.depbuilder):
                                  #'cQstd_v53',
                                  #'cPstd_v53'
                                  ]:
-                        mout = self.matlab_fork(arg1, arg2, c, v)
+                        mout = self.matlab_fork("makeROOTcut", arg1, arg2, c, v)
                         if (mout == 0) and (self.version_from_rootfile(c, self.root_cutdir_gen, types) == v):
                             mresult = 'Success!'
                         else:
@@ -256,13 +256,13 @@ class rootcut(graphbuilder.depbuilder):
         b, c = a.communicate()
         return (b.split("Working revision:\t")[1].split("\n")[0])
 
-    def matlab_fork(self, dataDir, cutDir, cut, version):
+    def matlab_fork(self, func, dataDir, cutDir, cut, version):
         """This calls matlab in a subprocess. It dumps the standard output
         to /dev/null but should return StandardError in a usable fashion. Needs more
         error recovery."""
 
         with open(os.devnull, 'w') as fp:
-            ret = subprocess.call(["/usr/local/MATLAB/R2010bSP1/bin/matlab","-nodisplay", "-nosplash", "-r", "makeROOTcut('{}', '{}', '{}', '{}');exit".format(dataDir, cutDir, cut, version) ],
+            ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", "{}('{}', '{}', '{}', '{}');exit".format(func, dataDir, cutDir, cut, version) ],
                                   stdout=fp)
         return ret
 
