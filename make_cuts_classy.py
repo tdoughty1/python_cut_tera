@@ -121,6 +121,8 @@ class rootcut(graphbuilder.depbuilder):
             #try:
             print "Updating CAP"
             self.update_cvs(self.root_cutdir_gen + '/cdmstools')
+            print "Building FCCS tree"
+            self.matlab_fork("makeCAPtree")
             print "Handing cuts off to MATLAB for production."
 
             for types in self.run_type_list:
@@ -256,13 +258,18 @@ class rootcut(graphbuilder.depbuilder):
         b, c = a.communicate()
         return (b.split("Working revision:\t")[1].split("\n")[0])
 
-    def matlab_fork(self, func, dataDir, cutDir, cut, version):
+    def matlab_fork(self, func, *args):
         """This calls matlab in a subprocess. It dumps the standard output
         to /dev/null but should return StandardError in a usable fashion. Needs more
         error recovery."""
 
+        if args:
+            caller ="{}({});exit".format(func, ",".join(args))
+        else:
+            caller = func
+
         with open(os.devnull, 'w') as fp:
-            ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", "{}('{}', '{}', '{}', '{}');exit".format(func, dataDir, cutDir, cut, version) ],
+            ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", caller],
                                   stdout=fp)
         return ret
 
