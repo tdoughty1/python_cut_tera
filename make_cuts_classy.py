@@ -49,7 +49,7 @@ class rootcut(graphbuilder.depbuilder):
         self.root_cutdir = (
             '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
         #cut generation dir
-        self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing'
+        self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/cuts'
         #location of checked out matlab cuts
         self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing'
             '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
