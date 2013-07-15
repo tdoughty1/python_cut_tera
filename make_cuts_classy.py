@@ -51,7 +51,7 @@ class rootcut(graphbuilder.depbuilder):
         #cut generation dir
         self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing'
         #location of checked out matlab cuts
-        self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing/src'
+        self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing'
             '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
         #update cvs
         print "Updating cvs"

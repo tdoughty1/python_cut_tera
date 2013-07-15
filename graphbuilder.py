@@ -9,7 +9,7 @@ class depbuilder(nx.DiGraph):
 
     def __init__(
         self,
-        cutdir='/localhome/production/python_cut'
+        cutdir='/tera2/data3/cdmsbatsProd/processing'
         '/cdmstools/CAP/FCCS/cuts/Soudan/r133'):
         """Builds a directed graph of cut dependencies upon initialization"""
 
