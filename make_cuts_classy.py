@@ -266,7 +266,7 @@ class rootcut(graphbuilder.depbuilder):
         if args:
             caller ="{}({});exit".format(func, ",".join(args))
         else:
-            caller = "run({});exit".format(func)
+            caller = "{};exit".format(func)
 
         with open(os.devnull, 'w') as fp:
             ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", caller],
