@@ -13,8 +13,8 @@ pathCAP = '/tera2/data3/cdmsbatsProd/processing/cdmstools';
 
 
 cd(pathCAP);
-cdmsStartup;
-add_CAP_paths;
+run(setupUtility/cdmsStartup);
+run(setupUtility/add_CAP_paths);
 
 
 % ========= Regenerate Tree =========

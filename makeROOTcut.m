@@ -28,8 +28,8 @@ function status = makeROOTcut22(dataDir, cutDir, cut, version)
   
   % ========== CAP paths =========
   cd(pathCAP);
-  cdmsStartup;
-  add_CAP_paths;
+  run(setupUtility/cdmsStartup);
+  run(setupUtility/add_CAP_paths);
   
   
   % ===========  INPUT ===========
