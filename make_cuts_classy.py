@@ -350,7 +350,7 @@ class rootcut(graphbuilder.depbuilder):
         """Calls Ben's hardlink script in a subprocess"""
 
         print "Calling Ben's snapshot script in a subprocess"
-        ret = subprocess.call(["sh", "/localhome/production/python_cut/take_cuts_snapshot.sh", cutgendir,
+        ret = subprocess.call(["sh", self.root_cutdir_gen + "/../src/take_cuts_snapshot.sh", cutgendir,
             rootcutdir])
         if ret == 1:
             print "Error with Ben's snapshot and hardlink bash script"
