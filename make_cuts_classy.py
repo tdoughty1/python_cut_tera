@@ -264,7 +264,7 @@ class rootcut(graphbuilder.depbuilder):
         error recovery."""
 
         if args:
-            caller ="{}({});exit".format(func, ",".join(args))
+            caller ="{}({});exit".format(func, ",".join(["\'{}\'".format(i) for i in args]))
         else:
             caller = "{};exit".format(func)
 
