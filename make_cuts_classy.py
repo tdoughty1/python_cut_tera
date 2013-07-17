@@ -232,7 +232,7 @@ class rootcut(graphbuilder.depbuilder):
             root_cut_dir + '/' +
             run_type + '/' +
             cut + '/*.root/cutInfoDir/cvsInfo')
-        cvs_rev_list = [i.cvsRevision.split('\x00') for i in rev_chain]
+        cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
         if os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:#fixes empty directory crash
             return '0.0'
         elif self.check_eq(cvs_rev_list):
