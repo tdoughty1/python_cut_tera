@@ -124,49 +124,7 @@ class rootcut(graphbuilder.depbuilder):
             print "Building FCCS tree"
             self.matlab_fork("makeCAPtree")
             print "Handing cuts off to MATLAB for production."
-
-            for types in self.run_type_list:
-                print "Updating {} cuts:".format(types)
-                arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
-                arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
-                arg3 = kludge[types]
-                for c, v in arg3.iteritems():
-
-                    print "===> {}".format(c)
-                    #if old cuts exist, delete them
-                    direc = self.root_cutdir_gen + "/{}/{}".format(types, c)
-                    if os.path.isdir(direc):
-                        print "-> Removing old cuts..."
-                        shutil.rmtree(direc)
-                    print "-> Generating new cuts ..."
-                    if c not in [ #'cTimeLite_69VAugSep2012',
-                                 #'cPostCf_133',
-                                 #"cQin2_v53_LT",
-                                 #"cQin1_v53_LT",
-                                 #"cER_qimean_v53_LT"
-                                 #'cQstd_v53',
-                                 #'cPstd_v53'
-                                 ]:
-                        mout = self.matlab_fork("makeROOTcut", arg1, arg2, c, v)
-                        if (mout == 0) and (self.version_from_rootfile(c, self.root_cutdir_gen, types) == v):
-                            mresult = 'Success!'
-                        else:
-                            mresult  = 'Failure!'
-                        print "-> {}".format(mresult)
-            #except:
-                #print "Error handing cuts off to MATLAB."
-                #ttime = '{:%Y-%m-%d-%H-%M-%S}'.format(
-                    #datetime.datetime.fromtimestamp(time.time()))
-                #with open(
-                    #self.root_cutdir + '/.log/' +
-                    #'MATLAB_ERROR' + ttime + '.log', 'w') as fyle:
-                    #fyle.write('Matlab has returned an error.'
-                        #' Please manually debug.')
-                #subprocess.call(['killall', 'MATLAB'])
-            #make logs (and a pickle)
-            self.make_logs(self.update_dict, self.root_cutdir_gen)
-            #hardlink to the cut dir
-            self.hlinker(self.root_cutdir_gen, self.root_cutdir)
+            mout = self.produce(kludge)
 
             return 'Matlab cut update script run and retuned ', mout
 
@@ -175,6 +133,49 @@ class rootcut(graphbuilder.depbuilder):
 ######################################
 #       Helper methods
 ######################################
+
+
+    def produce(self, kludge):
+        for types in self.run_type_list:
+            print "Updating {} cuts:".format(types)
+            arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
+            arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
+            arg3 = kludge[types]
+            def mapper(cv):
+                c,v = cv
+
+                print "===> {}".format(c)
+                #if old cuts exist, delete them
+                direc = self.root_cutdir_gen + "/{}/{}".format(types, c)
+                if os.path.isdir(direc):
+                    print "-> Removing old {} cuts...".format(c)
+                    shutil.rmtree(direc)
+                print "-> Generating new {} cuts ...".format(c)
+                if c not in [ #'cTimeLite_69VAugSep2012',
+                                #'cPostCf_133',
+                                #"cQin2_v53_LT",
+                                #"cQin1_v53_LT",
+                                #"cER_qimean_v53_LT"
+                                #'cQstd_v53',
+                                #'cPstd_v53'
+                                ]:
+                    mout = self.matlab_fork("makeROOTcut", arg1, arg2, c, v)
+                    if (mout == 0) and (self.version_from_rootfile(c, self.root_cutdir_gen, types) == v):
+                        mresult = '{} build: Success!'.format(c)
+                    else:
+                        mresult  = '{} build: Failure!'.format(c)
+                    print "-> {}".format(mresult)
+            map(mapper, arg3.iteritems())
+        self.make_logs(self.update_dict, self.root_cutdir_gen)
+        self.hlinker(self.root_cutdir_gen, self.root_cutdir)
+
+    def rsyncer(self):
+        """Calls the rsync command to copy the data to nero"""
+
+        print "rsync'ing data to nero..."
+
+        ret = os.subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts" ])
+        return ret
 
     def update_cvs(self, mat_cut_dir):
         """Calls the 'cvs update' command in a subprocess. If the subprocess
@@ -362,15 +363,21 @@ class rootcut(graphbuilder.depbuilder):
 # Extra command line arguments will be treated as running types. The
 # default is all running types.
 if __name__ == "__main__":
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("-f", "--force", action="store_true", dest="force", default=False, help="Force all cuts to be rebuild")
-    (options, args) = parser.parse_args()
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("mode", metavar="MODE", nargs='*', help="List of running modes (bg_permitted cf ...) to be rebuilt.")
+    parser.add_argument("-f", "--force", action="store_true", dest="force", default=False, help="Force all cuts to be rebuild")
+    parser.add_argument("-c", "--cuts", help="List of cuts to be rebuilt. Will only build these cuts.", nargs='*')
+    args = parser.parse_args()
     t1 = time.time()
     geterdone = rootcut()
-    if len(sys.argv) > 1:
-        geterdone.run_type_list = args
-        geterdone.force = options.force
-    goterdid = geterdone.main()
+    if len(args.mode) > 0:
+        geterdone.run_type_list = args.mode
+    geterdone.force = args.force
+    if len(args.cuts) > 0:
+        kludge = {t:{c:geterdone.version_from_cvs(c, geterdone.mat_cutdir) for c in args.cuts} for t in geterdone.run_type_list}
+        goterdid = geterdone.produce(kludge)
+    else:
+        goterdid = geterdone.main()
     t2 = time.time()
     print goterdid, t2 - t1
