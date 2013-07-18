@@ -379,10 +379,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     t1 = time.time()
     geterdone = rootcut()
-    if len(args.mode) > 0:
+    if args.mode != None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
-    if len(args.cuts) > 0:
+    if args.cuts != None:
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir)) for c in args.cuts]
         geterdone.user_cuts = kludge
     goterdid = geterdone.main()
