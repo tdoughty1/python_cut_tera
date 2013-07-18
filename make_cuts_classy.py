@@ -69,6 +69,7 @@ class rootcut(graphbuilder.depbuilder):
         self.update_dict = {}
         self.outdated_dict = {}
         self.old_version_dict = {}
+        self.user_cuts = None
 
 ############################
 #     Main method
@@ -94,10 +95,13 @@ class rootcut(graphbuilder.depbuilder):
                 cuts_to_update.append(i)
             #make a list of all outdated cuts
             print "Building list of outdated cuts for {}".format(h)
-            self.outdated_dict[h] = self.make_cut_update_list(
-                self.mat_cutdir,
-                self.root_cut_dict[h],
-                h)
+            if self.user_cuts == None:
+                self.outdated_dict[h] = self.make_cut_update_list(
+                    self.mat_cutdir,
+                    self.root_cut_dict[h],
+                    h)
+            else:
+                self.outdated_dict[h] = self.user_cuts
             if self.outdated_dict[h] is None:
                 self.outdated_dict[h] = []
             self.update_dict[h] = self.outdated_dict[h]
@@ -136,6 +140,10 @@ class rootcut(graphbuilder.depbuilder):
 
 
     def produce(self, kludge):
+        """A wrapper method that contains the matlab interface. This is where the structure of my script's
+        concurrency can be changed (what loops when and where.). It also calls the two rsync commands that get the cuts
+        to the correct directories."""
+
         for types in self.run_type_list:
             print "Updating {} cuts:".format(types)
             arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
@@ -174,7 +182,7 @@ class rootcut(graphbuilder.depbuilder):
 
         print "rsync'ing data to nero..."
 
-        ret = os.subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts" ])
+        ret = os.subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/" ])
         return ret
 
     def update_cvs(self, mat_cut_dir):
@@ -375,9 +383,8 @@ if __name__ == "__main__":
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
     if len(args.cuts) > 0:
-        kludge = {t:{c:geterdone.version_from_cvs(c, geterdone.mat_cutdir) for c in args.cuts} for t in geterdone.run_type_list}
-        goterdid = geterdone.produce(kludge)
-    else:
-        goterdid = geterdone.main()
+        kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir)) for c in args.cuts]
+        geterdone.user_cuts = kludge
+    goterdid = geterdone.main()
     t2 = time.time()
     print goterdid, t2 - t1
