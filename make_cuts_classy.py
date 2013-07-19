@@ -176,6 +176,7 @@ class rootcut(graphbuilder.depbuilder):
             map(mapper, arg3.iteritems())
         self.make_logs(self.update_dict, self.root_cutdir_gen)
         self.hlinker(self.root_cutdir_gen, self.root_cutdir)
+        self.rsyncer()
 
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
