@@ -70,6 +70,8 @@ class rootcut(graphbuilder.depbuilder):
         self.outdated_dict = {}
         self.old_version_dict = {}
         self.user_cuts = None
+        self.ttime = '{:%Y-%m-%d-%H-%M-%S}'.format(
+            datetime.datetime.fromtimestamp(time.time()))
 
 ############################
 #     Main method
@@ -278,7 +280,7 @@ class rootcut(graphbuilder.depbuilder):
         else:
             caller = "{};exit".format(func)
 
-        with open(os.devnull, 'w') as fp:
+        with open(self.root_cutdir_gen + '/.log/MatlabDump_' + self.ttime + '.log', 'w') as fp:
             ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", caller],
                                   stdout=fp)
         return ret
@@ -325,15 +327,13 @@ class rootcut(graphbuilder.depbuilder):
     def make_logs(self, update_dict, root_cutdir):
         """This simply makes logs."""
 
-        ttime = '{:%Y-%m-%d-%H-%M-%S}'.format(
-            datetime.datetime.fromtimestamp(time.time()))
         with open(
             root_cutdir + "/.log/pickles/" +
-            ttime + '.p', 'w') as fyle:
+            self.ttime + '.p', 'w') as fyle:
             pickle.dump(update_dict, fyle)
         with open(
             root_cutdir + '/.log/' +
-            ttime + '.log', 'w') as fyle:
+            self.ttime + '.log', 'w') as fyle:
             for h in update_dict:
                 fyle.write(
                     '=========================\n'
