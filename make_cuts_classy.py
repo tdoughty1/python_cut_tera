@@ -185,7 +185,7 @@ class rootcut(graphbuilder.depbuilder):
 
         print "rsync'ing data to nero..."
 
-        ret = os.subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/" ])
+        ret = subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/" ])
         return ret
 
     def update_cvs(self, mat_cut_dir):
