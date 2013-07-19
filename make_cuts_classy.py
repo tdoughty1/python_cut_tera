@@ -344,7 +344,10 @@ class rootcut(graphbuilder.depbuilder):
                         name, num = c
                     except:
                         name, num = c, "*cant retrive CVSinfo*"
-                    old = self.old_version_dict[h][name]
+                    try:
+                        old = self.old_version_dict[h][name]
+                    except:
+                        old = 'N/A'
                     if old == num:
                         fyle.write(
                             '{} updated from revision {}'
