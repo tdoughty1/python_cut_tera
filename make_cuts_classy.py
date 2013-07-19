@@ -178,7 +178,15 @@ class rootcut(graphbuilder.depbuilder):
             map(mapper, arg3.iteritems())
         self.make_logs(self.update_dict, self.root_cutdir_gen)
         self.hlinker(self.root_cutdir_gen, self.root_cutdir)
+        self.linkupdate()
         self.rsyncer()
+
+    def linkupdate(self):
+        """Softlinks current directory to point to most recent cuts"""
+
+        ndir = max(os.listdir(self.root_cutdir))
+        ret = subprocess.call(["ln", "-s", self.root_cutdir + ndir, self.root_cutdir + "current"])
+        return ret
 
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
@@ -280,7 +288,7 @@ class rootcut(graphbuilder.depbuilder):
         else:
             caller = "{};exit".format(func)
 
-        with open(self.root_cutdir_gen + '/.log/MatlabDump_' + self.ttime + '.log', 'w') as fp:
+        with open(self.root_cutdir_gen + '/.log/MatlabDump_' + self.ttime + '.log', 'a') as fp:
             ret = subprocess.call(["/usr/local/MATLAB/R2012b/bin/matlab","-nodisplay", "-nosplash", "-r", caller],
                                   stdout=fp)
         return ret
