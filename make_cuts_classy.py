@@ -150,8 +150,8 @@ class rootcut(graphbuilder.depbuilder):
             arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
             arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
             arg3 = kludge[types]
-            def mapper(cv,b):
-                c,v = cv
+            def mapper(cvb):
+                c,v,b = cvb
 
                 print "===> {}".format(c)
                 if b == 'before':
