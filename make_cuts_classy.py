@@ -254,7 +254,7 @@ class rootcut(graphbuilder.depbuilder):
             run_type + '/' +
             cut + '/*.root/cutInfoDir/cvsInfo')
         cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
-        if not os.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)): #fixes no directory crash
+        if not os.path.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)): #fixes no directory crash
             return '0.0'
         elif os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:#fixes empty directory crash
             return '0.0'
