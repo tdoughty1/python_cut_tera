@@ -129,7 +129,6 @@ class rootcut(graphbuilder.depbuilder):
             self.update_cvs(self.root_cutdir_gen + '/../cdmstools')
             print "Building FCCS tree"
             self.matlab_fork("makeCAPtree")
-            print "Handing cuts off to MATLAB for production."
             mout = self.produce(kludge)
 
             return 'Matlab cut update script run and retuned ', mout
@@ -151,31 +150,32 @@ class rootcut(graphbuilder.depbuilder):
             arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
             arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
             arg3 = kludge[types]
-            def mapper(cv):
+            def mapper(cv,b):
                 c,v = cv
 
                 print "===> {}".format(c)
-                #if old cuts exist, delete them
-                direc = self.root_cutdir_gen + "/{}/{}".format(types, c)
-                if os.path.isdir(direc):
-                    print "-> Removing old {} cuts...".format(c)
-                    shutil.rmtree(direc)
-                print "-> Generating new {} cuts ...".format(c)
-                if c not in [ #'cTimeLite_69VAugSep2012',
-                                #'cPostCf_133',
-                                #"cQin2_v53_LT",
-                                #"cQin1_v53_LT",
-                                #"cER_qimean_v53_LT"
-                                #'cQstd_v53',
-                                #'cPstd_v53'
-                                ]:
-                    mout = self.matlab_fork("makeROOTcut", arg1, arg2, c, v)
+                if b == 'before':
+                    #if old cuts exist, delete them
+                    direc = self.root_cutdir_gen + "/{}/{}".format(types, c)
+                    if os.path.isdir(direc):
+                        print "-> Removing old {} cuts...".format(c)
+                        shutil.rmtree(direc)
+                #print "-> Generating new {} cuts ...".format(c)
+                else:
                     if (mout == 0) and (self.version_from_rootfile(c, self.root_cutdir_gen, types) == v):
                         mresult = '{} build: Success!'.format(c)
                     else:
                         mresult  = '{} build: Failure!'.format(c)
                     print "-> {}".format(mresult)
-            map(mapper, arg3.iteritems())
+            cvlist = []
+            for c,v in arg3.iteritems():
+                cvlist.append(c)
+                cvlist.append(v)
+
+            map(mapper, ((c,v,'before') for c,v in arg3.iteritems()))
+            print "Handing cuts off to MATLAB for production."
+            mout = self.matlab_fork("makeROOTcut",[arg1, arg2] + cvlist)
+            map(mapper, ((c,v,'after') for c,v in arg3.iteritems()))
         self.make_logs(self.update_dict, self.root_cutdir_gen)
         self.hlinker(self.root_cutdir_gen, self.root_cutdir)
         self.linkupdate()
