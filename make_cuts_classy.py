@@ -174,7 +174,8 @@ class rootcut(graphbuilder.depbuilder):
 
             map(mapper, ((c,v,'before') for c,v in arg3.iteritems()))
             print "Handing cuts off to MATLAB for production."
-            mout = self.matlab_fork("makeROOTcut",[arg1, arg2] + cvlist)
+            arguements = [arg1, arg2] + cvlist
+            mout = self.matlab_fork("makeROOTcut",*arguements)
             map(mapper, ((c,v,'after') for c,v in arg3.iteritems()))
         self.make_logs(self.update_dict, self.root_cutdir_gen)
         self.hlinker(self.root_cutdir_gen, self.root_cutdir)
