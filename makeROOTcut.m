@@ -10,9 +10,20 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function status = makeROOTcut22(dataDir, cutDir, cut, version)
+function status = makeROOTcut22(dataDir, cutDir, varargin)
   
-  cutStruct = struct(cut, version);
+  % check number of inputs
+   if (mod(nargin,2) | nargin==2)
+    disp('Wrong number of input arguments!'); 
+    return;
+  end
+  
+
+
+  % build structure
+  for ipar=1:2:nargin-2
+    cutStruct.([varargin{ipar}])= varargin{ipar+1};
+  end
   
   % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % SETUP/INPUT
