@@ -186,8 +186,11 @@ class rootcut(graphbuilder.depbuilder):
         """Softlinks current directory to point to most recent cuts"""
 
         ndir = max(os.listdir(self.root_cutdir))
-        ret = subprocess.call(["ln", "-s", self.root_cutdir + ndir, self.root_cutdir + "current"])
-        return ret
+        os.chdir(self.root_cutdir)
+        if os.path.islink(self.root_cutdir + '/' + "current"):
+            ret1 = subprocess.call(["rm", "current"])
+        ret = subprocess.call(["ln", "-s",  ndir,  "current"])
+        return ret,ret1
 
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
