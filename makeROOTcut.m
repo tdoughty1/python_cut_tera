@@ -136,7 +136,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
     
     if isempty(fullcutName)
       disp(['ERROR in makROOTcut: Cannot find "' cutName '" CAP cut']);
-      return;
+      continue;
     end
     
     % determine if  detector dependent
@@ -144,7 +144,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
      [dependlist, isgen] = CAP_FCCS_parse_func(fullcutName);
     catch err
       disp(['ERROR in makROOTcut: Error parsing function ' fullcutName ]);
-      return;
+      continue;
     end
     
 
@@ -169,7 +169,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
       cut = cutFunc();
     catch err
       disp(['ERROR in makROOTcut: Error getting cut values for ' cutName]);
-      return;
+      continue;
     end
 
   
@@ -192,7 +192,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
         root_save(fullFileName,'update','cutInfoDir','cvsInfo',{'cvsRevision'},{cutVersion});	
       catch err
         disp(['ERROR saving ROOT file ' fullFileName]);
-        return;
+        continue;
       end;
 
     end
@@ -233,7 +233,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
        
        if isempty(fullcutName)
 	 disp(['ERROR in makROOTcut: Cannot find "' cutName '" CAP cut']);
-	 return;
+	continue;
        end
        
        % determine if  detector dependent
@@ -241,7 +241,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
          [dependlist, isgen] = CAP_FCCS_parse_func(fullcutName);
        catch err
          disp(['ERROR in makROOTcut: Error parsing function ' fullcutName ]);
-         return;
+         continue;
        end
        
        
@@ -268,7 +268,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
            cut = cutFunc(detnum);
          catch err
 	   disp(['ERROR in makROOTcut: Error getting cut values for ' cutName]);
-           return;
+           continue;
          end
 
        else
@@ -311,7 +311,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
 	   end
 	 catch err
 	   disp(['ERROR saving ROOT file ' fullFileName]);
-           return;
+           continue;
          end;
 
 
