@@ -42,7 +42,6 @@ class rootcut(graphbuilder.depbuilder):
         It calls the 'cvs update' command (to get the newest matlab cut definitions)
         and sets some attributes which are fairly self explanatory"""
 
-        graphbuilder.depbuilder.__init__(self)
         self.force = False
         #location of the root cuts (containing directories named for
         #data taking mode--like ba or bg_restricted etc.)
@@ -72,6 +71,8 @@ class rootcut(graphbuilder.depbuilder):
         self.user_cuts = None
         self.ttime = '{:%Y-%m-%d-%H-%M-%S}'.format(
             datetime.datetime.fromtimestamp(time.time()))
+        print "Initializing cut dependency graph..."
+        graphbuilder.depbuilder.__init__(self)
 
 ############################
 #     Main method
