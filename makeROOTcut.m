@@ -128,7 +128,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
   for iBaseDir = 1:length(dirStruct)
     for iDir = 1:length(dirStruct(iBaseDir).name)
       
-      dirName = dirStruct(iBaseDir).name{iDir}
+      dirName = dirStruct(iBaseDir).name{iDir};
       
       % ----  Start CAP session ---
       success = CAP_root_init('CAP_batch_setup',0,dirName); 
@@ -260,6 +260,7 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
       
       % loop detectors
       createRootFile =1;
+      
       for idet=1:length(detList)
 	
 	% CAP detnum
@@ -331,10 +332,10 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
 	    
 	    
 	    % check detector type
-	    cutType= cutSeries & DetType(detnum,0)==dettype;
-	    if sum(cutType)==0
-	      continue;
-	    end
+	    %cutType= cutSeries & DetType(detnum,0)==dettype;
+	    %if sum(cutType)==0
+	    %  continue;
+	    %end
 	    
 	    
 	    %  Get RRQs
@@ -352,10 +353,18 @@ function status = makeROOTcut22(dataDir, cutDir, varargin)
 	    try
 	      if  createRootFile ==1;
 		root_save(fullFileName,'create','cutDir',treeName,fieldnames(RRQ),struct2cell(RRQ));
-		root_save(fullFileName,'update','cutInfoDir','cvsInfo',{'cvsRevision'},{cutVersion});	
 	      else
 		root_save(fullFileName,'update','cutDir',treeName,fieldnames(RRQ),struct2cell(RRQ));
 	      end
+
+	      if (idet==1)
+                 root_save(fullFileName,'update','cutInfoDir','cvsInfo',{'cvsRevision'},{'0.0'});
+              end
+
+	      if (idet==length(detList))
+                 root_save(fullFileName,'update','cutInfoDir','cvsInfo',{'cvsRevision'},{cutVersion}); 
+              end
+
 	    catch err
 	      disp(['ERROR saving ROOT file ' fullFileName]);
 	      continue;
