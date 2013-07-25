@@ -185,7 +185,7 @@ class rootcut(graphbuilder.depbuilder):
     def linkupdate(self):
         """Softlinks current directory to point to most recent cuts"""
 
-        ndir = max(os.listdir(self.root_cutdir))
+        ndir = max([i for i in os.listdir(self.root_cutdir) if 'c' not in i])
         os.chdir(self.root_cutdir)
         if os.path.islink(self.root_cutdir + '/' + "current"):
             ret1 = subprocess.call(["rm", "current"])
