@@ -196,10 +196,31 @@ class rootcut(graphbuilder.depbuilder):
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
 
+        print "rsync'ing data to micro..."
+        ret1 = subprocess.call([
+            "rsync",
+            "-avr",
+            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            "cdms@cdmsmicro.fnal.gov:/micro/data6/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+        ])
+
         print "rsync'ing data to nero..."
 
-        ret = subprocess.call(["rsync", "-avr", "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/", "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/" ])
-        return ret
+        ret1 = subprocess.call([
+            "rsync",
+            "-avr",
+            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+        ])
+
+        print "rsync'ing data to galba..."
+        ret2 = subprocess.call([
+            "rsync",
+            "-avr",
+            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+        ])
+        return ret1,ret2
 
     def update_cvs(self, mat_cut_dir):
         """Calls the 'cvs update' command in a subprocess. If the subprocess
