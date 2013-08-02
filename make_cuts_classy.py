@@ -151,6 +151,10 @@ class rootcut(graphbuilder.depbuilder):
             arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(types)
             arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
             arg3 = kludge[types]
+            print "Removing cuts no longer in CVS..."
+            for old_cut in (cut for cut in os.listdir(self.root_cutdir_gen +"/{}".format(types)) if cut not in self.new_cut_list):
+                print "Removing {}".format(old_cut)
+                shutil.rmtree(self.root_cutdir_gen + '/{}/{}'.format(types, old_cut))
             def mapper(cvb):
                 c,v,b = cvb
 
