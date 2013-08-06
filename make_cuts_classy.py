@@ -206,7 +206,7 @@ class rootcut(graphbuilder.depbuilder):
         print "rsync'ing data to micro..."
         ret1 = subprocess.call([
             "rsync",
-            "-avr",
+            "-ar",
             "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
             "cdmsmicro.fnal.gov:/micro/data6/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
@@ -215,7 +215,7 @@ class rootcut(graphbuilder.depbuilder):
 
         ret1 = subprocess.call([
             "rsync",
-            "-avr",
+            "-ar",
             "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
             "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
@@ -223,7 +223,7 @@ class rootcut(graphbuilder.depbuilder):
         print "rsync'ing data to galba..."
         ret2 = subprocess.call([
             "rsync",
-            "-avr",
+            "-ar",
             "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
