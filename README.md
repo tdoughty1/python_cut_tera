@@ -35,3 +35,23 @@ rc.user_cuts = ['cGoodEv_133', 'cRandom_133'] #build only these cuts
 rc.main() #build the cuts!
 ```
 
+As usual, to display all options use the -h flag
+
+```shell
+$ python make_cuts_classy.py -h
+usage: make_cuts_classy.py [-h] [-f] [-b] [-c [CUTS [CUTS ...]]]
+                           [MODE [MODE ...]]
+
+positional arguments:
+  MODE                  List of running modes (bg_permitted cf ...) to be
+                        rebuilt.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f, --force           Force all cuts to be rebuild
+  -b, --batch           Directs script standard output to a log file
+  -c [CUTS [CUTS ...]], --cuts [CUTS [CUTS ...]]
+                        List of cuts to be rebuilt. Will only build these
+                        cuts.
+```
+
