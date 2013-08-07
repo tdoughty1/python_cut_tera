@@ -2,7 +2,8 @@ python cut tera
 ===============
 
 This is a script (and supporting files) to automatically generate ROOT cuts from MATLAB cuts.
-It is run as production@cdmstera2 where it is located in $PROC/src.
+It is run as production@cdmstera2 where it is located in $PROC/src. This should be in production's
+$PATH so the script can be called from anywhere.
 
 Example usage
 -------------
@@ -10,19 +11,19 @@ Example usage
 To rebuild all outdated barium cuts (and all cuts that depend on such a cuts):
 
 ```shell
-python make_cuts_classy.py ba
+make_cuts_classy.py ba
 ```
 
 To force a rebuild of all californium and all low background:
 
 ```shell
-python make_cuts_classy.py bg_permitted cf -f
+make_cuts_classy.py bg_permitted cf -f
 ```
 
 To just build cGood events and cRandom for californium and barium (no dependencies):
 
 ```shell
-python make_cuts_classy.py cf ba -c cGoodEv_133 cRandom_133
+make_cuts_classy.py cf ba -c cGoodEv_133 cRandom_133
 ```
 
 All of the script functionality can also be used from python. The above example is:
@@ -38,7 +39,7 @@ rc.main() #build the cuts!
 As usual, to display all options use the -h flag
 
 ```shell
-$ python make_cuts_classy.py -h
+$ make_cuts_classy.py -h
 usage: make_cuts_classy.py [-h] [-f] [-b] [-c [CUTS [CUTS ...]]]
                            [MODE [MODE ...]]
 
