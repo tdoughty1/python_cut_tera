@@ -327,7 +327,7 @@ class rootcut(graphbuilder.depbuilder):
         else:
             caller = "{};exit".format(func)
 
-        with open(self.root_cutdir_gen + '/.log/MatlabDump_' + self.ttime + '.log', 'a') as fp:
+        with open(self.root_cutdir_gen + '/.log/' + self.ttime + 'MatlabDump.log', 'a') as fp:
             ret = subprocess.call(
                 ["/usr/local/MATLAB/R2012b/bin/matlab",
                     "-nodisplay", "-nosplash", "-r", caller],
@@ -440,6 +440,13 @@ if __name__ == "__main__":
         default=False,
         help="Force all cuts to be rebuild")
     parser.add_argument(
+        "-b",
+        "--batch",
+        action="store_true",
+        dest="batch",
+        default=False,
+        help="Directs script standard output to a log file")
+    parser.add_argument(
         "-c",
         "--cuts",
         help="List of cuts to be rebuilt. Will only build these cuts.",
@@ -447,6 +454,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     t1 = time.time()
     geterdone = rootcut()
+    if args.batch:
+        sys.stdout = open(geterdone.root_cutdir_gen + '/.log/' + geterdone.ttime + 'PythonDump.log', 'a')
     if args.mode is not None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
@@ -454,6 +463,11 @@ if __name__ == "__main__":
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
                   for c in args.cuts]
         geterdone.user_cuts = kludge
-    goterdid = geterdone.main()
-    t2 = time.time()
-    print goterdid, t2 - t1
+    try:
+        goterdid = geterdone.main()
+        t2 = time.time()
+        print goterdid, t2 - t1
+    finally:
+        if args.batch:
+            sys.stdout.close()
+
