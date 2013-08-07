@@ -1,4 +1,4 @@
-#!/usr/local/python-2.7.3/bin/python
+#!/usr/local/anaconda/bin/python
 """
 Use to rebuild root cuts from matlab cut files.
 Written for python 2.7. Currently must be run as production@cdmsmicro.
