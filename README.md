@@ -5,7 +5,7 @@ This is a script (and supporting files) to automatically generate ROOT cuts from
 It is run as production@cdmstera2 where it is located in $PROC/src. This should be in production's
 $PATH so the script can be called from anywhere.
 
-Example usage
+Example script usage
 -------------
 
 To rebuild all outdated barium cuts (and all cuts that depend on such a cuts):
@@ -55,4 +55,16 @@ optional arguments:
                         List of cuts to be rebuilt. Will only build these
                         cuts.
 ```
+Automatic dispatch
+------------------
 
+To have the cuts be continuously built you can use my dispatch script that is included in $PROC/src. A simple:
+
+```shell
+cd $PROC/src
+python dispatch.py
+```
+
+Will schedule the cuts to be rebuilt every six hours. If they are currently in the process of building, the script
+will wait another six hours before trying again. This should be run using vnc or screen (or similar) so it can stay
+running at all times.
