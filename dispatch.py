@@ -14,7 +14,7 @@ from apscheduler.scheduler import Scheduler
 sched = Scheduler()
 sched.start()
 
-@sched.interval_schedule(hours=6)
+@sched.interval_schedule(hours=4)
 def job_func():
     t1 = time.time()
     rc = rootcut()
@@ -27,3 +27,10 @@ def job_func():
     finally:
         sys.stdout.close()
 
+while True:
+    x = raw_input('Type "kill" to terminate. Any other input returns info.')
+    if x == 'kill':
+        sched.shutdown()
+        break
+    else:
+        sched.print_jobs()
