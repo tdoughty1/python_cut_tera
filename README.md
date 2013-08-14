@@ -68,3 +68,24 @@ python dispatch.py
 Will schedule the cuts to be rebuilt every six hours. If they are currently in the process of building, the script
 will wait another six hours before trying again. This should be run using vnc or screen (or similar) so it can stay
 running at all times.
+
+
+Troubleshooting
+----------------
+
+First log onto production@cdmstera2. If you just want to see what the script is up to, try a quick
+
+```shell
+ps aux | grep MATLAB
+```
+This should give you some idea of what is building. If MATLAB is not running, try the same command for python to check
+if my script is waiting to regenerate again.
+
+If something has gone wrong, or you need to stop or start things try to capture the screen that my script runs in
+
+```shell
+screen -rd
+```
+
+If that does not work try checking the logs in $PROC/cuts/.log to see what went wrong. My only other advice is to check
+out the above source code and / or try to run the script manually.

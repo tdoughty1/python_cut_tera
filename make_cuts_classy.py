@@ -204,7 +204,7 @@ class rootcut(graphbuilder.depbuilder):
         """Calls the rsync command to copy the data to nero"""
 
         print "rsync'ing data to micro..."
-        ret1 = subprocess.call([
+        ret0 = subprocess.call([
             "rsync",
             "-arH",
             "--delete",
@@ -230,6 +230,8 @@ class rootcut(graphbuilder.depbuilder):
             "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
+        if ret0 == 1 or ret1 == 1 or ret2 ==1:
+            raise Exception('rsync subprocess failure')
         return ret1, ret2
 
     def update_cvs(self, mat_cut_dir):
@@ -248,7 +250,7 @@ class rootcut(graphbuilder.depbuilder):
                     'CVS_ERROR' + ttime + '.log', 'w') as fyle:
                 fyle.write('CVS has failed to update.'
                            ' Please manually debug.')
-            sys.exit("cvs faild to update")
+            raise Exception("cvs faild to update")
         return ret
 
     def build_cutlists(self, root_cutdir, run_type_list):
@@ -335,6 +337,8 @@ class rootcut(graphbuilder.depbuilder):
                 ["/usr/local/MATLAB/R2012b/bin/matlab",
                     "-nodisplay", "-nosplash", "-r", caller],
                 stdout=fp)
+            if ret == 1:
+                raise Exception('MATLAB subprocess failure')
         return ret
 
     def make_cut_update_list(self, mat_cutdir, root_cut_list, run_type):
