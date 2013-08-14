@@ -41,7 +41,7 @@ def excepter(e):
             subject      = 'Cut production error!',
             message      = message,
             login        = 'cdms.production@gmail.com',
-            password     = 'SoupRcdms')
+            password     = 'DuperSuper')
 if __name__ == '__main__':
     from make_cuts_classy import rootcut
 
