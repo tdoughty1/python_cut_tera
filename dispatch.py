@@ -35,13 +35,14 @@ def excepter(e):
 
             please connect to production@cdmstera2 and debug.
             for documentation please see https://github.com/durcan/python_cut_tera""".format(e))
-    sendemail(from_addr    = 'cdms.production@gmail.com',
-            to_addr_list = ['serfass@berkeley.edu'],
+    problems = sendemail(from_addr    = 'cdms.production@gmail.com',
+            to_addr_list = ['cornell@caltech.edu'],
             cc_addr_list = ['cornell@caltech.edu'],
             subject      = 'Cut production error!',
             message      = message,
             login        = 'cdms.production@gmail.com',
             password     = 'DuperSuper')
+    return problems
 if __name__ == '__main__':
     from make_cuts_classy import rootcut
 
@@ -56,7 +57,7 @@ if __name__ == '__main__':
         try:
             t1 = time.time()
             rc = rootcut()
-            rc.run_type_list = ['cf', 'ba', 'bg_lt_permitted']
+            rc.run_type_list = ['cf', 'ba', 'bg_lt_permitted_Sept2013']
             sys.stdout = open(rc.root_cutdir_gen + '/.log/' + rc.ttime + 'PythonDump.log', 'a')
             try:
                 rc.main()
