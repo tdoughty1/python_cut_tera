@@ -47,11 +47,11 @@ class rootcut(graphbuilder.depbuilder):
         # location of the root cuts (containing directories named for
         # data taking mode--like ba or bg_restricted etc.)
         self.root_cutdir = (
-            '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
+            '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
         # cut generation dir
-        self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/cuts'
+        self.root_cutdir_gen = '/data6/cdmsbatsProd/processing/cuts'
         # location of checked out matlab cuts
-        self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing'
+        self.mat_cutdir = ('/data3/cdmsbatsProd/processing'
                            '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
         # update cvs
         print "Updating cvs"
@@ -145,9 +145,9 @@ class rootcut(graphbuilder.depbuilder):
 
         for types in self.run_type_list:
             print "Updating {} cuts:".format(types)
-            arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(
+            arg1 = '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(
                 types)
-            arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
+            arg2 = '/data6/cdmsbatsProd/processing/cuts/{}'.format(types)
             arg3 = kludge[types]
             print "Removing cuts no longer in CVS..."
             for old_cut in (cut for cut in os.listdir(self.root_cutdir_gen + "/{}".format(types)) if cut not in self.new_cut_list):
@@ -186,9 +186,9 @@ class rootcut(graphbuilder.depbuilder):
             mout = self.matlab_fork("makeROOTcut", *arguements)
             map(mapper, ((c, v, 'after') for c, v in arg3.iteritems()))
         self.make_logs(self.update_dict, self.root_cutdir_gen)
-        self.hlinker(self.root_cutdir_gen, self.root_cutdir)
-        self.linkupdate()
-        self.rsyncer()
+        #self.hlinker(self.root_cutdir_gen, self.root_cutdir)
+        #self.linkupdate()
+        #self.rsyncer()
 
     def linkupdate(self):
         """Softlinks current directory to point to most recent cuts"""
