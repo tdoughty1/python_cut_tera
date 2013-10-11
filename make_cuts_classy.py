@@ -49,7 +49,7 @@ class rootcut(graphbuilder.depbuilder):
         self.root_cutdir = (
             '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
         # cut generation dir
-        self.root_cutdir_gen = '/data6/cdmsbatsProd/processing/cuts'
+        self.root_cutdir_gen = '/data6/processing/cutgeneration/cuts'
         # location of checked out matlab cuts
         self.mat_cutdir = ('/data3/cdmsbatsProd/processing'
                            '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
@@ -147,7 +147,7 @@ class rootcut(graphbuilder.depbuilder):
             print "Updating {} cuts:".format(types)
             arg1 = '/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(
                 types)
-            arg2 = '/data6/cdmsbatsProd/processing/cuts/{}'.format(types)
+            arg2 = '/data6/processing/cutgeneration/cuts/{}'.format(types)
             arg3 = kludge[types]
             print "Removing cuts no longer in CVS..."
             for old_cut in (cut for cut in os.listdir(self.root_cutdir_gen + "/{}".format(types)) if cut not in self.new_cut_list):
