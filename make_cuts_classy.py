@@ -351,7 +351,7 @@ class rootcut(graphbuilder.depbuilder):
         cuts_to_update = []
         cut_rev_dict = {}
         old_version_inner = {}
-        missing_cuts = [j for j in self.new_cut_list if j not in root_cut_list]
+        missing_cuts = [j for j in self.new_cut_list if j not in root_cut_list + self.exclude]
         # make a list of all outdated cuts
         for i in self.new_cut_list:
             # find revision number of newly updated matlab cuts
