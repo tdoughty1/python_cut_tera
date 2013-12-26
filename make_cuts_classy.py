@@ -44,6 +44,7 @@ class rootcut(graphbuilder.depbuilder):
         and sets some attributes which are fairly self explanatory"""
 
         self.force = False
+        self.exclude = []
         # location of the root cuts (containing directories named for
         # data taking mode--like ba or bg_restricted etc.)
         self.root_cutdir = (
@@ -369,8 +370,9 @@ class rootcut(graphbuilder.depbuilder):
                 old_version_inner[i] = rev_num_old
                 # print rev_num_new, rev_num_old, (rev_num_new != rev_num_old)
                 # append outdated cut to list
-                if (rev_num_new != rev_num_old) or self.force:
-                    cuts_to_update.append((i, rev_num_new))
+                if i not in self.exclude:
+                    if (rev_num_new != rev_num_old) or self.force:
+                        cuts_to_update.append((i, rev_num_new))
         # deal with reverse deps
         for (i, j) in cuts_to_update:
             for dep in self.parents(i):
@@ -458,6 +460,11 @@ if __name__ == "__main__":
         "--cuts",
         help="List of cuts to be rebuilt. Will only build these cuts.",
         nargs='*')
+    parser.add_argument(
+        "-x",
+        "--exclude",
+        help="List of cuts to be excluded. Overrides the -f option.",
+        nargs="*")
     args = parser.parse_args()
     t1 = time.time()
     geterdone = rootcut()
@@ -466,6 +473,7 @@ if __name__ == "__main__":
     if args.mode is not None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
+    geterdone.exclude = args.exclude
     if args.cuts is not None:
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
                   for c in args.cuts]
