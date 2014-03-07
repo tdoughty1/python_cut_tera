@@ -209,7 +209,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsmicro.fnal.gov:/micro/data6/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
 
@@ -219,7 +219,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
 
@@ -228,7 +228,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
         if ret0 == 1 or ret1 == 1 or ret2 ==1:
@@ -285,23 +285,26 @@ class rootcut(graphbuilder.depbuilder):
         particular cut. If for some reason the revision number is indeterminate (if say
         not all file have the same revision number), then the revision number will be
         set to '0.0' which will force them all to be regenerated."""
-
-        rev_chain = ROOT.TChain()
-        rev_chain.Add(
-            root_cut_dir + '/' +
-            run_type + '/' +
-            cut + '/*.root/cutInfoDir/cvsInfo')
-        cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
-        #fixes no directory crash
-        if not os.path.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)):
-            return '0.0'
-        #fixes empty directory crash
-        elif os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:
-            return '0.0'
-        elif self.check_eq(cvs_rev_list):
-            return cvs_rev_list[0]
-        else:
-            return '0.0'
+        
+        try:
+            rev_chain = ROOT.TChain()
+            rev_chain.Add(
+                root_cut_dir + '/' +
+                run_type + '/' +
+                cut + '/*.root/cutInfoDir/cvsInfo')
+            cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
+            #fixes no directory crash
+            if not os.path.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)):
+                return '0.0'
+            #fixes empty directory crash
+            elif os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:
+                return '0.0'
+            elif self.check_eq(cvs_rev_list):
+                return cvs_rev_list[0]
+            else:
+                return '0.0'
+        except:
+            return 'error'
 
     @memoize.Memoize
     def version_from_cvs(self, cut, mat_cut_dir):
