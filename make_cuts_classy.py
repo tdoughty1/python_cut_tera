@@ -44,6 +44,7 @@ class rootcut(graphbuilder.depbuilder):
         and sets some attributes which are fairly self explanatory"""
 
         self.force = False
+        self.exclude = []
         # location of the root cuts (containing directories named for
         # data taking mode--like ba or bg_restricted etc.)
         self.root_cutdir = (
@@ -208,7 +209,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsmicro.fnal.gov:/micro/data6/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
 
@@ -218,7 +219,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
 
@@ -227,7 +228,7 @@ class rootcut(graphbuilder.depbuilder):
             "rsync",
             "-arH",
             "--delete",
-            "/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/",
+            self.root_cutdir,
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
         if ret0 == 1 or ret1 == 1 or ret2 ==1:
@@ -284,23 +285,26 @@ class rootcut(graphbuilder.depbuilder):
         particular cut. If for some reason the revision number is indeterminate (if say
         not all file have the same revision number), then the revision number will be
         set to '0.0' which will force them all to be regenerated."""
-
-        rev_chain = ROOT.TChain()
-        rev_chain.Add(
-            root_cut_dir + '/' +
-            run_type + '/' +
-            cut + '/*.root/cutInfoDir/cvsInfo')
-        cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
-        #fixes no directory crash
-        if not os.path.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)):
-            return '0.0'
-        #fixes empty directory crash
-        elif os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:
-            return '0.0'
-        elif self.check_eq(cvs_rev_list):
-            return cvs_rev_list[0]
-        else:
-            return '0.0'
+        
+        try:
+            rev_chain = ROOT.TChain()
+            rev_chain.Add(
+                root_cut_dir + '/' +
+                run_type + '/' +
+                cut + '/*.root/cutInfoDir/cvsInfo')
+            cvs_rev_list = [i.cvsRevision.split('\x00')[0] for i in rev_chain]
+            #fixes no directory crash
+            if not os.path.isdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)):
+                return '0.0'
+            #fixes empty directory crash
+            elif os.listdir('{}/{}/{}'.format(root_cut_dir, run_type, cut)) == []:
+                return '0.0'
+            elif self.check_eq(cvs_rev_list):
+                return cvs_rev_list[0]
+            else:
+                return '0.0'
+        except:
+            return 'error'
 
     @memoize.Memoize
     def version_from_cvs(self, cut, mat_cut_dir):
@@ -350,7 +354,7 @@ class rootcut(graphbuilder.depbuilder):
         cuts_to_update = []
         cut_rev_dict = {}
         old_version_inner = {}
-        missing_cuts = [j for j in self.new_cut_list if j not in root_cut_list]
+        missing_cuts = [j for j in self.new_cut_list if j not in root_cut_list + self.exclude]
         # make a list of all outdated cuts
         for i in self.new_cut_list:
             # find revision number of newly updated matlab cuts
@@ -369,15 +373,17 @@ class rootcut(graphbuilder.depbuilder):
                 old_version_inner[i] = rev_num_old
                 # print rev_num_new, rev_num_old, (rev_num_new != rev_num_old)
                 # append outdated cut to list
-                if (rev_num_new != rev_num_old) or self.force:
-                    cuts_to_update.append((i, rev_num_new))
+                if i not in self.exclude:
+                    if (rev_num_new != rev_num_old) or self.force:
+                        cuts_to_update.append((i, rev_num_new))
         # deal with reverse deps
         for (i, j) in cuts_to_update:
             for dep in self.parents(i):
                 t = (dep, cut_rev_dict[dep])
                 if t not in cuts_to_update:
-                    cuts_to_update.append(t)
-        self.old_version_dict[run_type] = old_version_inner
+                    if dep not in self.exclude:
+                        cuts_to_update.append(t)
+            self.old_version_dict[run_type] = old_version_inner
         return cuts_to_update
 
     def make_logs(self, update_dict, root_cutdir):
@@ -458,6 +464,11 @@ if __name__ == "__main__":
         "--cuts",
         help="List of cuts to be rebuilt. Will only build these cuts.",
         nargs='*')
+    parser.add_argument(
+        "-x",
+        "--exclude",
+        help="List of cuts to be excluded. Overrides the -f option.",
+        nargs="*")
     args = parser.parse_args()
     t1 = time.time()
     geterdone = rootcut()
@@ -466,6 +477,7 @@ if __name__ == "__main__":
     if args.mode is not None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
+    geterdone.exclude = args.exclude
     if args.cuts is not None:
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
                   for c in args.cuts]
