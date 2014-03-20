@@ -342,6 +342,8 @@ class rootcut(graphbuilder.depbuilder):
         outdated, do not exist, or depend on such a cut."""
 
         # get new matlab cut list and check for new cuts
+        if root_cut_list == None:
+            root_cut_list = []
         cuts_to_update = []
         cut_rev_dict = {}
         old_version_inner = {}
