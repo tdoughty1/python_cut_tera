@@ -222,7 +222,7 @@ class rootcut(graphbuilder.depbuilder):
             self.root_cutdir,
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
-        if ret0 == 1 or ret1 == 1 or ret2 ==1:
+        if ret1 == 1 or ret2 ==1:
             raise Exception('rsync subprocess failure')
         return ret1, ret2
 
