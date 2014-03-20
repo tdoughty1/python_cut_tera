@@ -471,7 +471,8 @@ if __name__ == "__main__":
     if args.mode is not None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
-    geterdone.exclude = args.exclude
+    if args.exclude is not None:
+        geterdone.exclude = args.exclude
     if args.cuts is not None:
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
                   for c in args.cuts]
