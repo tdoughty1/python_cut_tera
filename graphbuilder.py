@@ -15,6 +15,8 @@ class depbuilder(nx.DiGraph):
 
         nx.DiGraph.__init__(self)
         self.cutdir = cutdir
+        #domain tracking
+        self.domain = {}
         self.cutlist = [
             i.rstrip('m').rstrip('.')
             for i in (os.listdir(self.cutdir+'/Prodv5-3')+os.listdir(self.cutdir))
@@ -30,10 +32,14 @@ class depbuilder(nx.DiGraph):
 
             self.add_node(i)
             with open(self.cutdir + prefix + i + '.m') as fyle:
+                #set the default domain to all data types
+                self.domain[i] = ['all']
                 for lyne in fyle:
                     if '%$depend' in lyne:
                         for k in (j for j in lyne.split() if j in self.cutlist):
                             self.add_edge(i, k)
+                    elif '%$domain' in lyne:
+                        self.domain[i] = lyne.split()[1:]
 
     def sketch(
         self):

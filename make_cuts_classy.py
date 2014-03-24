@@ -204,15 +204,6 @@ class rootcut(graphbuilder.depbuilder):
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
 
-        print "rsync'ing data to micro..."
-        ret0 = subprocess.call([
-            "rsync",
-            "-arH",
-            "--delete",
-            self.root_cutdir,
-            "cdmsmicro.fnal.gov:/micro/data6/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
-        ])
-
         print "rsync'ing data to nero..."
 
         ret1 = subprocess.call([
@@ -231,7 +222,7 @@ class rootcut(graphbuilder.depbuilder):
             self.root_cutdir,
             "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         ])
-        if ret0 == 1 or ret1 == 1 or ret2 ==1:
+        if ret1 == 1 or ret2 ==1:
             raise Exception('rsync subprocess failure')
         return ret1, ret2
 
@@ -351,31 +342,34 @@ class rootcut(graphbuilder.depbuilder):
         outdated, do not exist, or depend on such a cut."""
 
         # get new matlab cut list and check for new cuts
+        if root_cut_list == None:
+            root_cut_list = []
         cuts_to_update = []
         cut_rev_dict = {}
         old_version_inner = {}
         missing_cuts = [j for j in self.new_cut_list if j not in root_cut_list + self.exclude]
         # make a list of all outdated cuts
         for i in self.new_cut_list:
-            # find revision number of newly updated matlab cuts
-            rev_num_new = self.version_from_cvs(
-                i, self.mat_cutdir)
-            cut_rev_dict[i] = rev_num_new
-            if i in missing_cuts:
-                cuts_to_update.append((i, rev_num_new))
-                old_version_inner[i] = "*newly created cut*"
-            else:
-                # find revision number of old root cuts
-                rev_num_old = self.version_from_rootfile(
-                    i,
-                    self.root_cutdir_gen,
-                    run_type)
-                old_version_inner[i] = rev_num_old
-                # print rev_num_new, rev_num_old, (rev_num_new != rev_num_old)
-                # append outdated cut to list
-                if i not in self.exclude:
-                    if (rev_num_new != rev_num_old) or self.force:
-                        cuts_to_update.append((i, rev_num_new))
+            if self.domain[i] == ['all'] or run_type in self.domain[i]:
+                # find revision number of newly updated matlab cuts
+                rev_num_new = self.version_from_cvs(
+                    i, self.mat_cutdir)
+                cut_rev_dict[i] = rev_num_new
+                if i in missing_cuts:
+                    cuts_to_update.append((i, rev_num_new))
+                    old_version_inner[i] = "*newly created cut*"
+                else:
+                    # find revision number of old root cuts
+                    rev_num_old = self.version_from_rootfile(
+                        i,
+                        self.root_cutdir_gen,
+                        run_type)
+                    old_version_inner[i] = rev_num_old
+                    # print rev_num_new, rev_num_old, (rev_num_new != rev_num_old)
+                    # append outdated cut to list
+                    if i not in self.exclude:
+                        if (rev_num_new != rev_num_old) or self.force:
+                            cuts_to_update.append((i, rev_num_new))
         # deal with reverse deps
         for (i, j) in cuts_to_update:
             for dep in self.parents(i):
@@ -477,7 +471,8 @@ if __name__ == "__main__":
     if args.mode is not None:
         geterdone.run_type_list = args.mode
     geterdone.force = args.force
-    geterdone.exclude = args.exclude
+    if args.exclude is not None:
+        geterdone.exclude = args.exclude
     if args.cuts is not None:
         kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
                   for c in args.cuts]
