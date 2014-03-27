@@ -38,8 +38,11 @@ class depbuilder(nx.DiGraph):
                     if '%$depend' in lyne:
                         for k in (j for j in lyne.split() if j in self.cutlist):
                             self.add_edge(i, k)
-                    elif '%$domain' in lyne:
-                        self.domain[i] = lyne.split()[1:]
+                    elif '%$domain' in lyne and 'none' not in lyne:
+                        domain_list = lyne.split()[1:]
+                        if domain_list == []:
+                            domain_list = ['all']
+                        self.domain[i] = domain_list
 
     def sketch(
         self):
