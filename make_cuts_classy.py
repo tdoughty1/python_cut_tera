@@ -373,10 +373,11 @@ class rootcut(graphbuilder.depbuilder):
         # deal with reverse deps
         for (i, j) in cuts_to_update:
             for dep in self.parents(i):
-                t = (dep, cut_rev_dict[dep])
-                if t not in cuts_to_update:
-                    if dep not in self.exclude:
-                        cuts_to_update.append(t)
+                if self.domain[i] == ['all'] or run_type in self.domain[i]:
+                    t = (dep, cut_rev_dict[dep])
+                    if t not in cuts_to_update:
+                        if dep not in self.exclude:
+                            cuts_to_update.append(t)
             self.old_version_dict[run_type] = old_version_inner
         return cuts_to_update
 
