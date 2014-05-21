@@ -38,7 +38,7 @@ class rootcut(graphbuilder.depbuilder):
         >>> rc = rootcut() #rc is an rootcut object. Its default atributs can be modified at this time if desired
         >>> rc.main() #main method runs like a script"""
 
-    def __init__(self):
+    def __init__(self, run):
         """The initialization method is called whenever a new rootcut object is created.
         It calls the 'cvs update' command (to get the newest matlab cut definitions)
         and sets some attributes which are fairly self explanatory"""
@@ -47,10 +47,24 @@ class rootcut(graphbuilder.depbuilder):
         self.exclude = []
         # location of the root cuts (containing directories named for
         # data taking mode--like ba or bg_restricted etc.)
-        self.root_cutdir = (
-            '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/cuts/')
-        # cut generation dir
-        self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/cuts'
+        if run == 133:
+            self.data_merge = (
+                '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged')
+            self.root_cutdir = (
+                self.data_merge + '/cuts/')
+            # cut generation dir
+            self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/R133/cuts'
+            self.nero_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+            self.galba_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+        elif run == 134:
+            self.data_merge = (
+                "/data2/cdmsbatsProd/R134/dataReleases/Prodv5-3-5/merged")
+            self.root_cutdir = (
+                self.data_merge + '/cuts/')
+            # cut generation dir
+            self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/R134/cuts'
+            self.nero_path =  "/galbadata1/R134/dataReleases/Prodv5-3-5/merged"
+            self.galba_path = self.nero_path
         # location of checked out matlab cuts
         self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing'
                            '/cdmstools/CAP/FCCS/cuts/Soudan/r133')
@@ -146,9 +160,9 @@ class rootcut(graphbuilder.depbuilder):
 
         for types in self.run_type_list:
             print "Updating {} cuts:".format(types)
-            arg1 = '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged/byseries/{}'.format(
+            arg1 = self.data_merge + '/byseries/{}'.format(
                 types)
-            arg2 = '/tera2/data3/cdmsbatsProd/processing/cuts/{}'.format(types)
+            arg2 = self.root_cutdir_gen '/{}'.format(types)
             arg3 = kludge[types]
             print "Removing cuts no longer in CVS..."
             for old_cut in (cut for cut in os.listdir(self.root_cutdir_gen + "/{}".format(types)) if cut not in self.new_cut_list):
@@ -211,7 +225,7 @@ class rootcut(graphbuilder.depbuilder):
             "-arH",
             "--delete",
             self.root_cutdir,
-            "cdmsonly@nero.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+            "cdmsonly@nero.stanford.edu:{}".format(self.nero_path)
         ])
 
         print "rsync'ing data to galba..."
@@ -220,7 +234,7 @@ class rootcut(graphbuilder.depbuilder):
             "-arH",
             "--delete",
             self.root_cutdir,
-            "cdmsonly@galba.stanford.edu:/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
+            "cdmsonly@galba.stanford.edu:{}".format(self.galba_path)
         ])
         if ret1 == 1 or ret2 ==1:
             raise Exception('rsync subprocess failure')
@@ -276,7 +290,7 @@ class rootcut(graphbuilder.depbuilder):
         particular cut. If for some reason the revision number is indeterminate (if say
         not all file have the same revision number), then the revision number will be
         set to '0.0' which will force them all to be regenerated."""
-        
+
         try:
             rev_chain = ROOT.TChain()
             rev_chain.Add(
@@ -435,6 +449,11 @@ class rootcut(graphbuilder.depbuilder):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
+    parsr.add_argument(
+        "-r",
+        "--run",
+        help="list of runs to use",
+        nargs='*')
     parser.add_argument(
         "mode",
         metavar="MODE",
@@ -466,23 +485,23 @@ if __name__ == "__main__":
         nargs="*")
     args = parser.parse_args()
     t1 = time.time()
-    geterdone = rootcut()
-    if args.batch:
-        sys.stdout = open(geterdone.root_cutdir_gen + '/.log/' + geterdone.ttime + 'PythonDump.log', 'a')
-    if args.mode is not None:
-        geterdone.run_type_list = args.mode
-    geterdone.force = args.force
-    if args.exclude is not None:
-        geterdone.exclude = args.exclude
-    if args.cuts is not None:
-        kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
-                  for c in args.cuts]
-        geterdone.user_cuts = kludge
-    try:
-        goterdid = geterdone.main()
-        t2 = time.time()
-        print goterdid, t2 - t1
-    finally:
+    for run in args.run:
+        geterdone = rootcut(run)
         if args.batch:
-            sys.stdout.close()
-
+          sys.stdout = open(geterdone.root_cutdir_gen + '/.log/' + geterdone.ttime + 'PythonDump.log', 'a')
+        if args.mode is not None:
+          geterdone.run_type_list = args.mode
+        geterdone.force = args.force
+        if args.exclude is not None:
+          geterdone.exclude = args.exclude
+        if args.cuts is not None:
+          kludge = [(c, geterdone.version_from_cvs(c, geterdone.mat_cutdir))
+                    for c in args.cuts]
+          geterdone.user_cuts = kludge
+        try:
+          goterdid = geterdone.main()
+          t2 = time.time()
+          print goterdid, t2 - t1
+        finally:
+          if args.batch:
+              sys.stdout.close()
