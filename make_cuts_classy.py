@@ -42,7 +42,7 @@ class rootcut(graphbuilder.depbuilder):
         """The initialization method is called whenever a new rootcut object is created.
         It calls the 'cvs update' command (to get the newest matlab cut definitions)
         and sets some attributes which are fairly self explanatory"""
-
+        print 'run: ',run
         self.force = False
         self.exclude = []
         # location of the root cuts (containing directories named for
