@@ -42,12 +42,12 @@ class rootcut(graphbuilder.depbuilder):
         """The initialization method is called whenever a new rootcut object is created.
         It calls the 'cvs update' command (to get the newest matlab cut definitions)
         and sets some attributes which are fairly self explanatory"""
-        print 'run: ',run
+        print 'run: ',run, " run == 134?: ", run==134
         self.force = False
         self.exclude = []
         # location of the root cuts (containing directories named for
         # data taking mode--like ba or bg_restricted etc.)
-        if run == 133:
+        if run == '133':
             self.data_merge = (
                 '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged')
             self.root_cutdir = (
@@ -56,7 +56,7 @@ class rootcut(graphbuilder.depbuilder):
             self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/R133/cuts'
             self.nero_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
             self.galba_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
-        elif run == 134:
+        elif run == '134':
             print "inside the 134 branch"
             self.data_merge = (
                 "/data2/cdmsbatsProd/R134/dataReleases/Prodv5-3-5/merged")
