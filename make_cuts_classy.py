@@ -160,9 +160,8 @@ class rootcut(graphbuilder.depbuilder):
 
         for types in self.run_type_list:
             print "Updating {} cuts:".format(types)
-            arg1 = self.data_merge + '/byseries/{}'.format(
-                types)
-            arg2 = self.root_cutdir_gen '/{}'.format(types)
+            arg1 = self.data_merge + '/byseries/{}'.format(types)
+            arg2 = self.root_cutdir_gen +  '/{}'.format(types)
             arg3 = kludge[types]
             print "Removing cuts no longer in CVS..."
             for old_cut in (cut for cut in os.listdir(self.root_cutdir_gen + "/{}".format(types)) if cut not in self.new_cut_list):
