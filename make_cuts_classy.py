@@ -144,7 +144,7 @@ class rootcut(graphbuilder.depbuilder):
             # hand cuts off to Matlab
             # try:
             print "Updating CAP"
-            self.update_cvs(self.root_cutdir_gen + '/../cdmstools')
+            self.update_cvs(self.root_cutdir_gen + '/../../cdmstools')
             print "Building FCCS tree"
             self.matlab_fork("makeCAPtree")
             mout = self.produce(kludge)
@@ -435,7 +435,7 @@ class rootcut(graphbuilder.depbuilder):
 
         print "Calling Ben's snapshot script in a subprocess"
         ret = subprocess.call(
-            ["sh", self.root_cutdir_gen + "/../src/take_cuts_snapshot.sh", cutgendir,
+            ["sh", self.root_cutdir_gen + "/../../src/take_cuts_snapshot.sh", cutgendir,
              rootcutdir])
         if ret == 1:
             print "Error with Ben's snapshot and hardlink bash script"
