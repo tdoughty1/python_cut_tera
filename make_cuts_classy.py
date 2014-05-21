@@ -57,6 +57,7 @@ class rootcut(graphbuilder.depbuilder):
             self.nero_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
             self.galba_path = "/data/R133/dataReleases/Prodv5-3_June2013/merged/cuts/"
         elif run == 134:
+            print "inside the 134 branch"
             self.data_merge = (
                 "/data2/cdmsbatsProd/R134/dataReleases/Prodv5-3-5/merged")
             self.root_cutdir = (
