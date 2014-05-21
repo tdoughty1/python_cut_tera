@@ -448,7 +448,7 @@ class rootcut(graphbuilder.depbuilder):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parsr.add_argument(
+    parser.add_argument(
         "-r",
         "--run",
         help="list of runs to use",
