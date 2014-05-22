@@ -64,7 +64,7 @@ class rootcut(graphbuilder.depbuilder):
                 self.data_merge + '/cuts/')
             # cut generation dir
             self.root_cutdir_gen = '/tera2/data3/cdmsbatsProd/processing/R134/cuts'
-            self.nero_path =  "/galbadata1/R134/dataReleases/Prodv5-3-5/merged"
+            self.nero_path =  "/galbadata1/R134/dataReleases/Prodv5-3-5/merged/cuts/"
             self.galba_path = self.nero_path
         # location of checked out matlab cuts
         self.mat_cutdir = ('/tera2/data3/cdmsbatsProd/processing'
