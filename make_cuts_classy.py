@@ -213,7 +213,7 @@ class rootcut(graphbuilder.depbuilder):
         if os.path.islink(self.root_cutdir + '/' + "current"):
             ret1 = subprocess.call(["rm", "current"])
         ret = subprocess.call(["ln", "-s", ndir, "current"])
-        return ret, ret1
+        return ret
 
     def rsyncer(self):
         """Calls the rsync command to copy the data to nero"""
