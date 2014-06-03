@@ -49,7 +49,7 @@ class rootcut(graphbuilder.depbuilder):
         # data taking mode--like ba or bg_restricted etc.)
         if run == '133':
             self.data_merge = (
-                '/tera2/data3/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged')
+                '/tera2/data1/cdmsbatsProd/R133/dataReleases/Prodv5-3_June2013/merged')
             self.root_cutdir = (
                 self.data_merge + '/cuts/')
             # cut generation dir
